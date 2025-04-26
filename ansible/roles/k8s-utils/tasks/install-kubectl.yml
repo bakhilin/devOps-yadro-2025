@@ -1,0 +1,22 @@
+---
+
+- name: Check if kubectl bin exists
+  ansible.builtin.stat:
+    path: "{{ utils_bin_directory }}"
+  register: kubectl_check
+
+- name: Check kubectl version
+  ansible.builtin.command:
+    cmd: "{{ utils_bin_directory }} version -client"
+  changed_when: false
+  failed_when: false
+  register: kubectl_existing_version
+
+- name: Install kubectl
+  become: true
+  ansible.builtin.apt:
+    name: kubectl
+    state: present
+    update_cache: true
+  # when: >
+  #   not kubectl_check.stat.exists

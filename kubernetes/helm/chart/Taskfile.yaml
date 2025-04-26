@@ -1,0 +1,40 @@
+version: '3'
+
+vars:
+  CHART_VERSION:
+    sh: yq '.version' Chart.yaml
+  CHART_NAME:
+    sh: yq '.name' Chart.yaml
+
+tasks:
+
+  debug:
+    desc: Generate manifests from chart and values to debug
+    cmds:
+      - mkdir -p debug
+      - for file in example/*.yaml; do
+          helm template $(basename "$file" .yaml) . -f "$file" --debug > "debug/$(basename "$file" .yaml)-manifests.yaml";
+        done
+
+  lint:
+    desc: Lint the Helm chart
+    cmds:
+      - helm lint .
+
+  build:
+    desc: Package the Helm chart
+    deps:
+      - task: lint
+    cmds:
+      - helm package . --version {{.CHART_VERSION}}
+
+  deploy-example:
+    desc: deploy example service
+    deps:
+      - task: lint
+    vars:
+      SERVICE_NAME: demo
+      VALUES: values.yaml
+      NAMESPACE: default
+    cmds:
+      - helm upgrade --install -n {{.NAMESPACE}} -f {{.VALUES}} {{.SERVICE_NAME}} .

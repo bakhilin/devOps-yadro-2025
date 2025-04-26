@@ -1,0 +1,22 @@
+---
+
+- name: Check if kubelet bin exists
+  ansible.builtin.stat:
+    path: "{{ utils_bin_directory }}"
+  register: kubelet_check
+
+- name: Check kubelet version
+  ansible.builtin.command:
+    cmd: "{{ utils_bin_directory }} version -client"
+  changed_when: false
+  failed_when: false
+  register: kubelet_existing_version
+
+- name: Install kubelet
+  become: true
+  ansible.builtin.apt:
+    name: kubelet
+    state: present
+    update_cache: true
+  # when: >
+  #   not kubelet_check.stat.exists

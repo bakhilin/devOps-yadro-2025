@@ -1,0 +1,9 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/jenkins-agent-connections
+
+# needs for next work
+agents_apt:
+ - { state: present, name: "{{ agents_java_package }}" }
+ - { state: present, name: acl }
+ - { state: present, name: python3-jenkins }

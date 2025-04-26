@@ -1,0 +1,16 @@
+---
+
+- name: Check Health Master Jenkins
+  hosts: master
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  roles:
+    - role: master
+
+- name: Connect Agents to Master Jenkins
+  hosts: agents 
+  become: true
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  roles:
+    - role: agents

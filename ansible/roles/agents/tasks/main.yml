@@ -1,0 +1,62 @@
+# #SPDX-License-Identifier: MIT-0
+# tasks file for roles/jenkins-agent-connections
+- name: Ensure Jenkins user exists
+  become_user: root
+  ansible.builtin.user:
+    name: jenkins
+    home: "{{ agents_jenkins_agent_workdir }}"
+    shell: /bin/bash
+    create_home: true
+    state: present
+
+- name: Ensure Jenkins User is in sudoers group
+  become_user: root
+  ansible.builtin.user:
+    name: jenkins
+    groups: sudo
+    append: true
+
+- name: Ensure packages are installed
+  become_user: root
+  ansible.builtin.apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  loop: "{{ agents_apt }}"
+
+- name: Update cache
+  become_user: root
+  ansible.builtin.apt:
+    update_cache: true
+    state: present
+
+- name: Create Jenkins agent directory
+  ansible.builtin.file:
+    path: "{{ agents_jenkins_agent_workdir }}"
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: "0755"
+
+- name: Fetch Jenkins Agent .jar
+  ansible.builtin.get_url:
+    url: "{{ agents_jenkins_url }}/jnlpJars/agent.jar"
+    dest: "{{ agents_jenkins_agent_workdir }}/agent.jar"
+    owner: jenkins
+    group: jenkins
+    mode: "0755"
+  register: fetch_from_server_result
+  retries: 5
+  delay: 3
+  until: fetch_from_server_result is success
+  notify: Restart agent.jar
+
+- name: Create Jenkins systemd service
+  ansible.builtin.template:
+    src: jenkins-agent.service.j2
+    dest: "{{ agents_jenkins_service_local_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd daemon
+    - Restart agent.jar

@@ -1,0 +1,2 @@
+ansible_port: 2202
+jenkins_agent_secret: "{{ jenkins_agent_secret_worker1 }}"

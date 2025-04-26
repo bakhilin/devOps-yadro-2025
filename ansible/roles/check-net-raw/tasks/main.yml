@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/check-net-raw
+- name: Ensure [crio.runtime] section exists
+  ansible.builtin.lineinfile:
+    path: /etc/crio/crio.conf
+    regexp: '^\[crio\.runtime\]'
+    line: '[crio.runtime]'
+    state: present
+  notify: Restart crio service
+
+- name: Ensure default_capabilities includes NET_RAW
+  ansible.builtin.blockinfile:
+    path: /etc/crio/crio.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - default_capabilities"
+    block: "{{ capability_block }}"
+    insertafter: '^\[crio\.runtime\]'
+    create: true
+  notify: Restart crio service

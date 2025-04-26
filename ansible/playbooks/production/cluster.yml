@@ -1,0 +1,27 @@
+---
+
+- name: Init cluster k8s
+  hosts: nodes
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  tasks:
+    - name: Init cluser
+      ansible.builtin.include_role: 
+        name: init-cluster
+      when: ansible_check_mode
+
+    - name: Ensure calico installed
+      ansible.builtin.include_role: 
+        name: calico-cni-plugin
+      when: ansible_check_mode
+
+- name: Check NET_RAW capabilities
+  hosts: agents
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  tasks:
+    - name: Ensure NET_RAW is set
+      ansible.builtin.include_role: 
+        name: check-net-raw
+      when: ansible_check_mode
+  

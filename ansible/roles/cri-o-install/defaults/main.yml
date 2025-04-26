@@ -1,0 +1,17 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for cri-o-install
+
+# versions
+cri_o_install_version: v1.31
+
+# services
+cri_o_install_service_state: started
+cri_o_install_service_enabled: true
+
+# packages
+cri_o_install_package: cri-o
+cri_o_install_package_state: present
+
+# runtime
+cri_o_install_runtime: runc

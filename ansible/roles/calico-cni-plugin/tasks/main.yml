@@ -1,0 +1,10 @@
+#SPDX-License-Identifier: MIT-0
+---
+
+- name: Add certs on Master
+  ansible.builtin.include_tasks: master.yml
+  when: kubernetes_role == "master"
+
+- name: Add to every node
+  ansible.builtin.include_tasks: worker.yml
+  when: kubernetes_role == "worker"

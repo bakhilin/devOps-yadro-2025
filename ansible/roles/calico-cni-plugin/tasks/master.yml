@@ -1,0 +1,48 @@
+---
+- name: Ensure directories exist
+  ansible.builtin.file:
+    path: "{{ item.name }}"
+    state: directory
+  loop: "{{ conf_paths }}"
+  register: dir_exist
+
+- name: Generate CNI key and CSR
+  ansible.builtin.command:
+    cmd: "{{ open_ssl_request_cni_key }}"
+  args:
+    creates: "{{ cni_key_path }}"
+  when: dir_exist is changed
+
+- name: Sign CNI certificate using Kubernetes CA
+  ansible.builtin.command:
+    cmd: "{{ sign_cni_cert }}"
+  args:
+    creates: "{{ cni_cert_path }}"
+  when: dir_exist is changed
+
+- name: Get Kubernetes API server address
+  ansible.builtin.command:
+    cmd: "{{ kunectl_config_view }}"
+  register: apiserver
+  changed_when: false
+
+- name: Create kubeconfig for CNI plugin
+  ansible.builtin.command:
+    cmd: "{{ kubectl_config_for_cni_plugin }}"
+  args:
+    creates: "{{ cni_kubeconfig_path }}"
+  when: dir_exist is changed
+
+- name: Install Kubernetes Python library
+  ansible.builtin.pip:
+    name: kubernetes
+    executable: pip3
+  when: dir_exist is changed
+
+- name: Create ClusterRoleBinding for CNI plugin
+  ansible.builtin.command:
+    cmd: "{{ kubectl_clusterrole_for_calico }}"
+  args:
+    creates: /etc/cni/net.d/cni.kubeconfig
+  when: dir_exist is changed
+

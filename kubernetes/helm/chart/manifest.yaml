@@ -1,0 +1,127 @@
+---
+# Source: currency-api/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: currency-api
+  namespace: bakhilin
+  labels:
+    helm.sh/chart: currency-api-0.1.0
+    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: test-release
+    meta.helm.sh/release-name: "test-release"
+spec:
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app.kubernetes.io/name: test-release
+  type: ClusterIP
+---
+# Source: currency-api/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: currency-api
+  namespace: bakhilin
+  labels:
+    helm.sh/chart: currency-api-0.1.0
+    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: test-release
+    meta.helm.sh/release-name: "test-release"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: test-release
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: currency-api-0.1.0
+        app.kubernetes.io/version: "0.1.1"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: test-release
+        meta.helm.sh/release-name: "test-release"
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.0.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          env:
+          - name: HOST
+            value: 0.0.0.0
+          - name: REDIS_HOST
+            value: localhost
+          - name: REDIS_PORT
+            value: "6379"
+        - name: currency-currency-api
+          image: "bakhilin/currency-rest-api:0.1.1"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 500m
+              ephemeral-storage: 2Gi
+              memory: 384Mi
+            requests:
+              cpu: 250m
+              ephemeral-storage: 50Mi
+              memory: 192Mi
+
+          ports:
+            - name: 8000-tcp
+              containerPort: 8000
+          env:
+            - name: HOST
+              value: 0.0.0.0
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 77.88.8.8
+---
+# Source: currency-api/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: currency-api-ingress
+  namespace: bakhilin
+  labels:
+    helm.sh/chart: currency-api-0.1.0
+    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: test-release
+    meta.helm.sh/release-name: "test-release"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "nikitos.tech"
+      http:
+        paths:
+          - path: "/info"
+            pathType: Prefix
+            backend:
+              service:
+                name: currency-api
+                port:
+                  number: 8000
+          - path: "/info/currency"
+            pathType: Prefix
+            backend: 
+              service:
+                name: currency-api
+                port:
+                  number: 8000

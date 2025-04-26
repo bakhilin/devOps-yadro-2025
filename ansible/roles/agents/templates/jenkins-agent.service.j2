@@ -1,0 +1,13 @@
+[Unit]
+Description=Jenkins Agent
+After=network.target
+
+[Service]
+User={{ jenkins_agent_user | default('root') }}
+WorkingDirectory={{ agents_jenkins_agent_workdir }}
+ExecStart=/usr/bin/java -jar {{ agents_jenkins_agent_workdir }}/agent.jar -url {{ agents_jenkins_url }} -secret {{ jenkins_agent_secret }} -name {{ jenkins_agent_name }} -webSocket -workDir "{{ agents_jenkins_agent_workdir }}"
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

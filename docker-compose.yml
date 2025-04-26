@@ -1,0 +1,46 @@
+# 
+# NOTE: THIS COMPOSE FILE DESIGNED TO RUN 2 SERVICES
+#
+
+services:
+  cache_redis:
+    image: redis:7.0.9-alpine
+    container_name: cache_redis
+    ports:
+      - 6379:6379
+    networks:
+      - common-network
+    volumes:
+      - ./cache_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 3s
+      timeout: 2s
+      retries: 5
+    restart: always   
+
+  currency_app:
+    container_name: currency_rest_api
+    image: bakhilin/currency-rest-api:0.1.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - REDIS_HOST=cache_redis
+      - REDIS_PORT=6379
+      - HOST=0.0.0.0
+    depends_on:
+      cache_redis:
+        condition: service_healthy
+    networks:
+      - common-network
+    restart: on-failure
+
+networks: 
+  common-network:
+    driver: bridge
+
+volumes:
+  cache_data:

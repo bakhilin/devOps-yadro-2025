@@ -1,0 +1,91 @@
+{{ $defaultPort := "8000" }}
+{{- $defaultImage := "bakhilin/currency-rest-api" }}
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: currency-api
+  namespace: bakhilin
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  helm.sh/chart: currency-api-0.1.0
+                  app.kubernetes.io/version: "0.1.1"
+                  app.kubernetes.io/managed-by: Helm
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: redis
+          image: redis:7.0.9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          env:
+            - name: HOST
+              value: 0.0.0.0
+            - name: REDIS_HOST
+              value: localhost
+            - name: REDIS_PORT
+              value: "6379"
+        - name: {{ .Values.project }}-{{ required "Provide serviceName" .Values.serviceName }}
+          image: "{{ $defaultImage }}:{{ required "Provide image.tag" .Values.image.tag }}"
+          imagePullPolicy: {{ default "Always" .Values.image.pullPolicy }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.resourcePreset) | nindent 12 }}
+          {{ if .Values.ingress.enabled -}}
+          ports:
+            - name: {{ $defaultPort }}-tcp
+              containerPort: {{ $defaultPort }}
+          {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- with .Values.env }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.envFrom }}
+          envFrom:
+            {{- with .Values.envFrom }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.probes }}
+          livenessProbe:
+            httpGet:
+              path: /info
+              port: {{ $defaultPort }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /info
+              port: {{ $defaultPort }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          {{- end }}
+
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 77.88.8.8

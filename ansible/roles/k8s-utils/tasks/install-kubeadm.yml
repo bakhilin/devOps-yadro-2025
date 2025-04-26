@@ -1,0 +1,22 @@
+---
+
+- name: Check if kubeadm bin exists
+  ansible.builtin.stat:
+    path: "{{ utils_bin_directory }}"
+  register: kubeadm_check
+
+- name: Check kubeadm version
+  ansible.builtin.command:
+    cmd: "{{ utils_bin_directory }} version -client"
+  changed_when: false
+  failed_when: false
+  register: kubeadm_existing_version
+
+- name: Install kubeadm
+  become: true
+  ansible.builtin.apt:
+    name: kubeadm
+    state: present
+    update_cache: true
+  # when: >
+  #   not kubeadm_check.stat.exists

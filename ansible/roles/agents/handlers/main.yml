@@ -1,0 +1,10 @@
+- name: Restart agent.jar
+  become_user: root
+  ansible.builtin.systemd:
+    name: jenkins-agent
+    state: restarted
+
+- name: Reload systemd daemon
+  become_user: root
+  ansible.builtin.systemd:
+    daemon_reload: true

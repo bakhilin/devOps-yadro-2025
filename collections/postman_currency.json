@@ -1,0 +1,101 @@
+{
+  "info": {
+    "name": "currency",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "bruno",
+      "event": []
+    },
+    {
+      "name": "info test",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8000/info",
+          "protocol": "http",
+          "host": [
+            "localhost:8000"
+          ],
+          "path": [
+            "info"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "date without currencies",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8000/info/currency?date=2023-03-30",
+          "protocol": "http",
+          "host": [
+            "localhost:8000"
+          ],
+          "path": [
+            "info",
+            "currency"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2023-03-30"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "get one cuurency",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:8000/info/currency?currency=USD&date=2022-01-17",
+          "protocol": "http",
+          "host": [
+            "localhost:8000"
+          ],
+          "path": [
+            "info",
+            "currency"
+          ],
+          "query": [
+            {
+              "key": "currency",
+              "value": "USD"
+            },
+            {
+              "key": "date",
+              "value": "2022-01-17"
+            }
+          ],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}

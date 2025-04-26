@@ -1,0 +1,55 @@
+---
+
+kubernetes_role: master
+
+ansible_user: root
+ansible_user_group: root
+
+conf_paths:
+  - {name: '/etc/kubernetes/pki' }
+  - {name: '/etc/cni/net.d' }
+
+cni_key_path: '/etc/cni/net.d/cni.key'
+open_ssl_request_cni_key: openssl req -newkey rsa:4096 \
+                  -keyout /etc/cni/net.d/cni.key \
+                  -nodes \
+                  -out /etc/cni/net.d/cni.csr \
+                  -subj "/CN=calico-cni"
+
+cni_cert_path: '/etc/cni/net.d/cni.crt'
+sign_cni_cert: openssl x509 -req -in /etc/cni/net.d/cni.csr \
+                   -CA /etc/kubernetes/pki/ca.crt \
+                   -CAkey /etc/kubernetes/pki/ca.key \
+                   -CAcreateserial \
+                   -out /etc/cni/net.d/cni.crt \
+                   -days 365
+
+kunectl_config_view: kubectl config view -o jsonpath='{.clusters[0].cluster.server}'
+
+
+cni_kubeconfig_path: '/etc/cni/net.d/cni.kubeconfig'
+kubectl_config_for_cni_plugin: kubectl config set-cluster kubernetes \
+          --certificate-authority=/etc/kubernetes/pki/ca.crt \
+          --embed-certs=true \
+          --server={{ apiserver.stdout }} \
+          --kubeconfig=/etc/cni/net.d/cni.kubeconfig
+
+      kubectl config set-credentials calico-cni \
+          --client-certificate=/etc/cni/net.d/cni.crt \
+          --client-key=/etc/cni/net.d/cni.key \
+          --embed-certs=true \
+          --kubeconfig=/etc/cni/net.d/cni.kubeconfig
+
+      kubectl config set-context default \
+          --cluster=kubernetes \
+          --user=calico-cni \
+          --kubeconfig=/etc/cni/net.d/cni.kubeconfig
+
+      kubectl config use-context default --kubeconfig=/etc/cni/net.d/cni.kubeconfig
+
+kubectl_clusterrole_for_calico: kubectl create clusterrolebinding calico-cni \
+          --clusterrole=calico-cni \
+          --user=calico-cni
+
+calico_amd_64: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-amd64
+calico_ipam_amd_64: https://github.com/projectcalico/cni-plugin/releases/download/v3.14.0/calico-ipam-amd64

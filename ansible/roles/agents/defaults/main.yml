@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for roles/jenkins-agent-connections
+
+# version java and above
+agents_java_package: "openjdk-17-jdk"   
+
+# master url
+agents_jenkins_url: "http://46.243.172.225:8081/" 
+
+# workspace jenkins agent
+agents_jenkins_agent_workdir: "/opt/jenkins"                
+
+# username jenkins 
+agents_jenkins_agent_user: "jenkins"
+
+# local path jenkins daemon
+agents_jenkins_service_local_path: "/etc/systemd/system/jenkins-agent.service"

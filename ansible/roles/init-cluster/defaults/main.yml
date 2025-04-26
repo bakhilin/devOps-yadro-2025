@@ -1,0 +1,39 @@
+---
+kubernetes_packages:
+  - name: kubelet
+    state: present
+  - name: kubectl
+    state: present
+  - name: kubeadm
+    state: present
+  - name: kubernetes-cni
+    state: present
+
+kubernetes_version: '1.31'
+kubernetes_role: control_plane
+
+kubernetes_kubeadm_init_extra_opts: ""
+kubernetes_join_command_extra_opts: ""
+kubernetes_allow_pods_on_control_plane: true
+kubernetes_pod_network:
+  cni: 'calico'
+  cidr: '192.168.0.0/16'
+
+kubernetes_kubeadm_kubelet_config_file_path: '/etc/kubernetes/kubeadm-kubelet-config.yaml'
+kubernetes_config_kubelet_configuration:
+  cgroupDriver: "systemd"
+
+
+kubernetes_config_cluster_configuration:
+  networking:
+    podSubnet: "{{ kubernetes_pod_network.cidr }}"
+  kubernetesVersion: "{{ kubernetes_version_kubeadm }}"
+
+kubernetes_config_kube_proxy_configuration: {}
+
+kubernetes_apiserver_advertise_address: ''
+kubernetes_version_kubeadm: 'stable-{{ kubernetes_version }}'
+kubernetes_ignore_preflight_errors: 'all'
+
+# Calico config file.
+kubernetes_calico_manifest_file: https://projectcalico.docs.tigera.io/manifests/calico.yaml

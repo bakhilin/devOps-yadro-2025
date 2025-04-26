@@ -1,0 +1,22 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/common
+
+common_kubernetes_version: v1.31
+
+# gpg key kubic url 
+common_kubic_apt_gpg_key: "https://pkgs.k8s.io/core:/stable:/{{ common_kubernetes_version }}/deb/Release.key"
+
+# local path to gpg key kubic
+common_kubic_apt_gpg_key_local_path: "/etc/apt/keyrings/kubernetes-apt-keyring.gpg"
+
+# approve repo
+common_kubic_apt_repository: "deb [signed-by={{ common_kubic_apt_gpg_key_local_path }}] https://pkgs.k8s.io/core:/stable:/{{ common_kubernetes_version }}/deb/ /"
+common_kubic_tmp_local_path: "/tmp/kubernetes-release.key"
+common_kubernetes_rep_sources: "/etc/apt/sources.list.d/kubernetes.list"
+
+common_apt:
+ - { state: present, name: apt-transport-https}
+ - { state: present, name: ca-certificates}
+ - { state: present, name: curl}
+ - { state: present, name: software-properties-common}

@@ -1,0 +1,38 @@
+---
+# Source: currency-api/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: currency-api-ingress
+  namespace: bakhilin
+  labels:
+    helm.sh/chart: currency-api-0.1.0
+    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: values.yaml
+    meta.helm.sh/release-name: "values.yaml"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "nikitos.tech"
+      http:
+        paths:
+          - path: "/info"
+            pathType: Prefix
+            backend:
+              service:
+                name: currency-api
+                port:
+                  number: 8000
+          - path: "/info/currency"
+            pathType: Prefix
+            backend: 
+              service:
+                name: currency-api
+                port:
+                  number: 8000

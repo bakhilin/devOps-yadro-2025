@@ -1,0 +1,21 @@
+---
+
+- name: Prepare nodes for cluster k8s
+  hosts: nodes
+  become: true
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  pre_tasks:
+    - name: Update cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 1800
+  roles:
+    - role: common
+    - role: cri-o-install
+    - role: k8s-utils
+
+    
+
+
+

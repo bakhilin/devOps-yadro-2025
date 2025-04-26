@@ -1,0 +1,11 @@
+---
+
+install_kubeadm: true
+install_kubelet: true
+install_kubectl: true
+
+
+utils_bin_directory: "/usr/bin"
+kubectl_bin_path: "/usr/bin/kubectl"
+kubelet_bin_path: "/usr/bin/kubelet"
+kubeadm_bin_path: "/usr/bin/kubeadm"

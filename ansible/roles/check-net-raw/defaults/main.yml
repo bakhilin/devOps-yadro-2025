@@ -1,0 +1,14 @@
+
+capability_block: '[crio.runtime]
+      default_capabilities = [
+         "CHOWN",
+         "DAC_OVERRIDE",
+         "FOWNER",
+         "FSETID",
+         "KILL",
+         "SETGID",
+         "SETUID",
+         "SETPCAP",
+         "NET_BIND_SERVICE",
+         "NET_RAW"
+      ]'

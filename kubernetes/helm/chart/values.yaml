@@ -1,0 +1,79 @@
+### Base
+
+serviceName: "currency-api" # service name
+namespace: "bakhilin"
+project: "currency"
+enabled: true
+image:
+  repository: "bakhilin/currency-rest-api" 
+  tag: "0.1.1"
+  pullPolicy: Always
+
+resourcePreset: "small"
+
+redis:
+  enabled: true
+  image: "redis:7.0.9-alpine"
+  pullPolicy: IfNotPresent
+
+### Env
+env: 
+  - name: HOST
+    value: "0.0.0.0"
+
+envFrom: {}
+
+### Dns
+
+
+existingConfigMap: {}
+existingSecret: {}
+
+### K8s additional
+initContainers: []
+
+### Persistence
+secrets:
+  enabled: false
+  secretName: ""
+  mountPath: ""
+  subPath: ""
+
+persistence:
+  enabled: false
+  mountPath: ""
+  extraVolumeMounts: []
+  extraVolumes: []
+
+### K8s policies
+replicaCount: 2
+rollingUpdate: 
+  maxSurge: 25%
+  maxUnavailable: 25%
+
+# defaults for deploying to albert main instance
+affinity: {}
+nodeSelector: {}
+tolerations: []
+
+### Ingress
+ingress:
+  enabled: true
+  name: "currency-ingress"
+  tlsSecret: ""
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  labels: {}
+  path: "/info|/info/currency"
+dns:
+  nameservers:
+    - 8.8.8.8
+    - 77.88.8.8
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000

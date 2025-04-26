@@ -1,0 +1,9 @@
+---
+
+- name: Install k8s utils
+  hosts: nodes
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  roles:
+    - role: common
+    - role: k8s-utils

@@ -1,0 +1,10 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/kubeadm-install
+
+# see common_vars directory 
+
+k8s__utils_kube_utils:
+  - { state: present, name: kubeadm}
+  - { state: present, name: kubectl}
+  - { state: present, name: kubelet}

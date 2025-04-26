@@ -1,0 +1,7 @@
+---
+
+- name: Prepare nodes
+  import_playbook: playbooks/production/prepare_nodes.yml
+
+- name: Set agents
+  import_playbook: playbooks/production/agents.yml

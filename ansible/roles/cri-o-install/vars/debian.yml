@@ -1,0 +1,17 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for cri-o-install
+
+cri_o_install_gpg_key: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ cri_o_install_version }}/deb/Release.key"
+cri_o_install_gpg_key_local_path: "/etc/apt/keyrings/cri-o-apt-keyring.gpg"
+cri_o_install_tmp_local_path: "/tmp/cri-o-release.key"
+
+cri_o_install_apt_repository: "deb [signed-by={{ cri_o_install_gpg_key_local_path }}] https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ cri_o_install_version }}/deb/ /"
+cri_o_install_sources: "/etc/apt/sources.list.d/cri-o.list"
+cri_o_install_conf_path: "/etc/crio/crio.conf.d"
+
+cri_o_install_apt:
+  - { state: latest, name: iproute2 }
+  - { state: latest, name: iptables }
+  - { state: latest, name: socat }
+  - { state: present, name: cri-o }

@@ -1,0 +1,18 @@
+{{ $defaultPort := "8000" }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.serviceName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: http
+      port: {{ $defaultPort }}
+      protocol: TCP
+      targetPort: {{ $defaultPort }}
+  selector:
+    {{- include "common.selectorLabels" . | nindent 4 }}
+  type: ClusterIP

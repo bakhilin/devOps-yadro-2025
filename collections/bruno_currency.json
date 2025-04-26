@@ -1,0 +1,126 @@
+{
+  "name": "currency",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "info test",
+      "seq": 2,
+      "request": {
+        "url": "http://localhost:8000/info",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [
+          {
+            "name": "res.status",
+            "value": "eq 200",
+            "enabled": true,
+            "uid": "oquaMqxomShmRzXKLk4Ek"
+          },
+          {
+            "name": "res.body",
+            "value": "neq 0",
+            "enabled": true,
+            "uid": "6YfsZeNzaRpySXhOT6Ljn"
+          }
+        ],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "date without currencies",
+      "seq": 3,
+      "request": {
+        "url": "http://localhost:8000/info/currency?date=2023-03-30",
+        "method": "GET",
+        "headers": [],
+        "params": [
+          {
+            "name": "date",
+            "value": "2023-03-30",
+            "type": "query",
+            "enabled": true
+          }
+        ],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "get one cuurency",
+      "seq": 4,
+      "request": {
+        "url": "http://localhost:8000/info/currency?currency=USD&date=2022-01-17",
+        "method": "GET",
+        "headers": [],
+        "params": [
+          {
+            "name": "currency",
+            "value": "USD",
+            "type": "query",
+            "enabled": true
+          },
+          {
+            "name": "date",
+            "value": "2022-01-17",
+            "type": "query",
+            "enabled": true
+          }
+        ],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": [],
+          "file": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "currency",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ],
+    "size": 0,
+    "filesCount": 0
+  }
+}

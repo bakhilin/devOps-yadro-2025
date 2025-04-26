@@ -1,0 +1,9 @@
+---
+
+- name: Install cri-o
+  hosts: nodes
+  vars_files:
+    - "{{ playbook_dir }}/../../secrets.yml"
+  roles:
+    - role: common
+    - role: cri-o-install

@@ -1,0 +1,29 @@
+#SPDX-License-Identifier: MIT-0
+---
+# Include vars and define needeed depends ansible_distribution
+- name: Include appropriate vars for OS family
+  ansible.builtin.include_vars: "{{ os_specific_vars }}"
+  with_first_found:
+    - "./vars/{{ ansible_distribution | lower | replace(' ', '_') }}-{{ ansible_distribution_version }}.yml"
+    - "./vars/{{ ansible_distribution | lower | replace(' ', '_') }}.yml"
+    - "./vars/{{ ansible_os_family | lower }}-{{ ansible_distribution_version }}.yml"
+    - "./vars/{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version }}.yml"
+    - "./vars/{{ ansible_os_family | lower }}.yml"
+    - "./defaults/main.yml"
+  loop_control:
+    loop_var: os_specific_vars
+
+- name: Install kubeadm
+  ansible.builtin.include_tasks:
+    file: install-kubeadm.yml
+  when: install_kubeadm
+
+- name: Install kubectl
+  ansible.builtin.include_tasks:
+    file: install-kubectl.yml
+  when: install_kubectl
+
+- name: Install kubelet
+  ansible.builtin.include_tasks:
+    file: install-kubelet.yml
+  when: install_kubelet

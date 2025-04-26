@@ -1,0 +1,37 @@
+---
+- name: Ensure CNI binaries directory exists
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    state: directory
+    mode: '0755'
+
+- name: Download Calico CNI binary
+  ansible.builtin.get_url:
+    url: "{{ calico_amd_64 }}"
+    dest: /opt/cni/bin/calico
+    mode: '0755'
+
+- name: Download Calico IPAM binary
+  ansible.builtin.get_url:
+    url: "{{ calico_ipam_amd_64 }}"
+    dest: /opt/cni/bin/calico-ipam
+    mode: '0755'
+
+- name: Ensure CNI config directory exists
+  ansible.builtin.file:
+    path: /etc/cni/net.d
+    state: directory
+    mode: '0755'
+
+- name: Copy cni.kubeconfig from master node to worker nodes
+  ansible.builtin.copy:
+    src: /etc/cni/net.d/cni.kubeconfig
+    dest: /etc/cni/net.d/calico-kubeconfig
+    mode: '0600'
+  delegate_to: "{{ groups['master'][0] }}"  # copy from master node cni.kubeconfig
+
+- name: Write CNI configuration file
+  ansible.builtin.copy:
+    src: files/10-calico.conflist
+    dest: /etc/cni/net.d/10-calico.conflist
+    mode: '0644'
